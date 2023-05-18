@@ -1,0 +1,12 @@
+# Python stuff
+# ------------
+__pycache__/
+
+# Editors
+# ---------
+.idea/
+.vscode
+
+# SQLite
+# --------
+*.sqlite*
