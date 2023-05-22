@@ -1,3 +1,3 @@
-# This is a support project for an educational institution :globe_with_meridians:
+# This is a support project for an educational institution 
 
-# To be continued :pushpin:
+# To be continued 

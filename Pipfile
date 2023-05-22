@@ -8,6 +8,7 @@ django = "~=4.2"
 black = "*"
 flake8 = "*"
 isort = "*"
+requests = "*"
 
 [dev-packages]
 
