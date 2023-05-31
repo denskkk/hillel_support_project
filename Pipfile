@@ -10,6 +10,7 @@ flake8 = "*"
 isort = "*"
 
 [dev-packages]
+requests = "*"
 
 [requires]
 python_version = "3.11"
