@@ -1,5 +1,6 @@
 import json
 from typing import Callable
+
 from django.http import HttpResponse
 
 

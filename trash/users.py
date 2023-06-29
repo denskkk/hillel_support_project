@@ -1,7 +1,9 @@
 import hashlib
 import json
-from core.models import User
+
 from django.http import HttpResponse
+
+from core.models import User
 
 
 def _validate_email(email: str) -> None:
@@ -33,7 +35,6 @@ def create_user(request):
 
     users = User.objects.all()
     _validate_unique(users, data, "username", "email")
-    hashed_password: str = hash_password(data["password"])
 
     user = User.objects.create(**data)
 

@@ -3,10 +3,11 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from random import choice, randint
 from string import ascii_letters
-from django.urls import path
+
 import requests
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
+from django.urls import path
 
 from core.models import User
 
@@ -156,4 +157,3 @@ urlpatterns = [
     path("api/pokemon/mobile/<str:name>/", get_pokemon_for_mobile),
     path("create-random-user", create_random_user),
 ]
-

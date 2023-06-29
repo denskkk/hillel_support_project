@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.db import models
 
 from core.managers import UserManager
 
@@ -48,7 +48,9 @@ class Request(models.Model):
 
 class Message(models.Model):
     text = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name="messages")
+    user = models.ForeignKey(
+        User, on_delete=models.RESTRICT, related_name="messages"
+    )  # noqa
     request = models.ForeignKey(
         Request, on_delete=models.RESTRICT, related_name="messages"
     )

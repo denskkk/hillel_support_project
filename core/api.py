@@ -5,8 +5,8 @@ from django.http import HttpResponse, JsonResponse
 
 from core.errors import SerializerError
 from core.models import User
-from core.serializers import UserCreateRequestSerializer, UserCreateResponseSerializer
-
+from core.serializers import (UserCreateRequestSerializer,  # noqa
+                              UserCreateResponseSerializer)
 
 
 def base_error_handler(func: Callable):
@@ -34,7 +34,9 @@ def create_user(request):
     if request.method != "POST":
         raise ValueError("Only POST method is allowed")
 
-    user_create_serializer = UserCreateRequestSerializer(data=json.loads(request.body))
+    user_create_serializer = UserCreateRequestSerializer(
+        data=json.loads(request.body)
+    )  # noqa
     is_valid = user_create_serializer.is_valid()
     if not is_valid:
         raise SerializerError(user_create_serializer)
