@@ -3,7 +3,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from random import choice, randint
 from string import ascii_letters
-
+from django.urls import path
 import requests
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
@@ -147,3 +147,13 @@ def create_random_user(request):
         content_type="application/json",
         content=json.dumps(result),
     )
+
+
+urlpatterns = [
+    path("api/pokemon/<str:name>/", get_pokemon),
+    path("api/pokemon/", get_all_pokemons),
+    path("api/pokemon/<str:name>/", delete_pokemon),
+    path("api/pokemon/mobile/<str:name>/", get_pokemon_for_mobile),
+    path("create-random-user", create_random_user),
+]
+

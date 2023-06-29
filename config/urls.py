@@ -1,14 +1,10 @@
-from django.contrib import admin
 from django.urls import path
+from django.contrib import admin
 
-from core.views import (create_random_user, delete_pokemon, get_all_pokemons,
-                        get_pokemon, get_pokemon_for_mobile)
+from core.api import create_user
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/pokemon/<str:name>/", get_pokemon),
-    path("api/pokemon/", get_all_pokemons),
-    path("api/pokemon/<str:name>/", delete_pokemon),
-    path("api/pokemon/mobile/<str:name>/", get_pokemon_for_mobile),
-    path("create-random-user", create_random_user),
+    path("users/", create_user),
 ]
