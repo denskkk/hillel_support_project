@@ -3,23 +3,29 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = (
-    "django-insecure-hs*-uxqd=bf$-8%t-y^jjcnpc$2e83ye-2=krl2@t(i68aum44",
-)  # noqa: E501
+SECRET_KEY = "$_*gwj6#t51c=(t^#q0mpgvb19osxt4%d&zx@f-(3$409*eh3m"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "core",
 ]
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt",
+]
+
+LOCAL_APPS = ["core", "authentication"]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -97,3 +103,16 @@ POKEAPI_BASE_URL = "https://pokeapi.co/api/v2/pokemon"
 
 
 AUTH_USER_MODEL = "core.User"
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
