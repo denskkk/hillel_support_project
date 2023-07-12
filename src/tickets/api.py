@@ -1,13 +1,19 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from tickets.models import Ticket
+from tickets.models import Message, Ticket
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
-from tickets.serializers import TicketAssignSerializer, TicketSerializer
+from tickets.serializers import (MessageSerializer, TicketAssignSerializer,
+                                 TicketSerializer)
 from users.constants import Role
+
+User = get_user_model()
 
 
 class TicketAPIViewSet(ModelViewSet):
@@ -32,12 +38,12 @@ class TicketAPIViewSet(ModelViewSet):
             permission_classes = [RoleIsUser]
         elif self.action == "retrieve":
             permission_classes = [IsOwner | RoleIsAdmin | RoleIsManager]
-        elif self.action == "update":
-            permission_classes = [RoleIsAdmin | RoleIsManager]
-        elif self.action == "destroy":
+        elif self.action in ["update", "partial_update", "destroy"]:
             permission_classes = [RoleIsAdmin | RoleIsManager]
         elif self.action == "take":
             permission_classes = [RoleIsManager]
+        elif self.action == "reassign":
+            permission_classes = [RoleIsAdmin]
         else:
             permission_classes = []
 
@@ -46,6 +52,7 @@ class TicketAPIViewSet(ModelViewSet):
     @action(detail=True, methods=["post"])
     def take(self, request, pk):
         ticket = self.get_object()
+
         serializer = TicketAssignSerializer(
             data={"manager_id": request.user.id}
         )  # noqa
@@ -54,21 +61,55 @@ class TicketAPIViewSet(ModelViewSet):
 
         return Response(TicketSerializer(ticket).data)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["put"])
     def reassign(self, request, pk):
         ticket = self.get_object()
+
+        if ticket.manager_id == request.data.get("new_manager"):
+            return Response(
+                {
+                    "detail": "The new manager is the same as the current manager."  # noqa
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = TicketAssignSerializer(
-            data={"manager_id": request.user.id}
+            data={"manager_id": request.data.get("new_manager")}
         )  # noqa
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         ticket = serializer.assign(ticket)
 
         return Response(TicketSerializer(ticket).data)
 
 
 class MessageListCreateAPIView(ListCreateAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = MessageSerializer
+    lookup_field = "ticket_id"
 
     def get_queryset(self):
-        # TODO: Start from here
-        raise NotImplementedError
+        return Message.objects.filter(
+            Q(ticket__user=self.request.user)
+            | Q(ticket__manager=self.request.user),  # noqa
+            ticket_id=self.kwargs[self.lookup_field],
+        )
+
+    @staticmethod
+    def get_ticket(user: User, ticket_id: int) -> Ticket:
+        tickets = Ticket.objects.filter(Q(user=user) | Q(manager=user))
+        return get_object_or_404(tickets, id=ticket_id)
+
+    def post(self, request, ticket_id: int):
+        ticket = self.get_ticket(request.user, ticket_id)
+        payload = {
+            "text": request.data["text"],
+            "user": request.user.id,
+            "ticket": ticket.id,
+        }
+        serializer = self.get_serializer(data=payload)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
