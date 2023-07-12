@@ -13,8 +13,11 @@ from rest_framework.viewsets import ModelViewSet
 
 from tickets.models import Message, Ticket
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
-from tickets.serializers import (MessageSerializer, TicketAssignSerializer,
-                                 TicketSerializer)
+from tickets.serializers import (
+    MessageSerializer,
+    TicketAssignSerializer,
+    TicketSerializer,
+)
 from tickets.services import AssignService
 from users.constants import Role
 
