@@ -1,5 +1,5 @@
+from typing import Anyj
 from dataclasses import dataclass
-from typing import Any
 
 
 class Settings:
@@ -16,19 +16,19 @@ ORM_MAPPINGS = {
 
 class DataMapper:
     def __init__(self, schema: object):
-        self.schema = schema
+        self._shema = schema
 
     def _connect(self):
-        self._session = None  # connection
+        self._session = None  # Connection string
 
     def create_table_if_not_exist(self):
-        table_name = "".join((self._schema_.__name__.lower(), +"s"))
-        _query = ORM_MAPPINGS[Settings.DATABASE_DRIVER]["CREATE_TABLE"]
+        table_name = "".join((self._schema.__name__.lower(), "s"))
+        _qeury = ORM_MAPPINGS[Settings.DATABASE_DRIVER]["CREATE_TABLE"]
         query = f"{_query} {table_name}"
         self._session.exexute(query)
 
     def insert(self, payload: dict):
-        pass
+        ...
 
 
 class Schema:
@@ -62,7 +62,7 @@ class Request(Schema):
     text: str
     visibility: bool
     user_id: int
-    manage_id: int
+    manager_id: int
 
 
 @dataclass
@@ -72,11 +72,11 @@ class Message(Schema):
     request_id: int
 
 
-#
-# john = User(
-#     id=1, username="john",
-#     email="john@email.com",
-#     password="23423424242"
-# )
-#
-# john.save()
+john = User(
+    id=1,
+    username="john",
+    email="john@email.com",
+    password="27c06c2aeb517b7e71f4bfc8f1b2b36b",
+)
+
+john.save()
