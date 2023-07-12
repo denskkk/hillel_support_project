@@ -6,12 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
 # fmt: off
 from tickets.models import Message, Ticket
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
 from tickets.serializers import (MessageSerializer, TicketAssignSerializer,
                                  TicketSerializer)
 from users.constants import Role
+
 # fmt: on
 User = get_user_model()
 
