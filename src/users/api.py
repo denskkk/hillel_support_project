@@ -1,6 +1,6 @@
+from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
-from rest_framework import status
 
 from users.serializers import UserCreateSerializer, UserPublicSerializer
 
@@ -17,5 +17,7 @@ class UserCreateAPIView(CreateAPIView):
         headers = self.get_success_headers(public_serializer.data)
 
         return Response(
-            public_serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            public_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers,  # noqa
         )
