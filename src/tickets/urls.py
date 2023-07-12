@@ -1,8 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-
-from tickets.api import TicketAPIViewSet, MessageListCreateAPIView
+from tickets.api import MessageListCreateAPIView, TicketAPIViewSet
 
 router = DefaultRouter()
 router.register("", TicketAPIViewSet, basename="tickets")

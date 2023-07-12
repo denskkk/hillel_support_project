@@ -1,4 +1,5 @@
 from time import sleep
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import Http404
@@ -10,13 +11,10 @@ from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from tickets.models import Ticket, Message
+from tickets.models import Message, Ticket
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
-from tickets.serializers import (
-    MessageSerializer,
-    TicketAssignSerializer,
-    TicketSerializer,
-)
+from tickets.serializers import (MessageSerializer, TicketAssignSerializer,
+                                 TicketSerializer)
 from tickets.services import AssignService
 from users.constants import Role
 
