@@ -8,11 +8,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from users.constants import Role
 
+# isort:skip_file
 from tickets.models import Message, Ticket
-from tickets.permissions import (IsOwner, RoleIsAdmin, RoleIsManager,  # noqa
-                                 RoleIsUser)
-from tickets.serializers import TicketAssignSerializer  # noqa
-from tickets.serializers import MessageSerializer, TicketSerializer  # noqa
+from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
+from tickets.serializers import (
+    MessageSerializer,
+    TicketAssignSerializer,
+    TicketSerializer,
+)
 
 User = get_user_model()
 
