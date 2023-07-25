@@ -1,44 +1,19 @@
-from time import sleep
-
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
-from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from tickets.models import Message, Ticket
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
-from tickets.serializers import (
-    MessageSerializer,
-    TicketAssignSerializer,
-    TicketSerializer,
-)
-from tickets.services import AssignService
+from tickets.serializers import (MessageSerializer, TicketAssignSerializer,
+                                 TicketSerializer)
 from users.constants import Role
 
 User = get_user_model()
-
-
-# def scheduler(id: int, func: Callable, *args, **kwargs):
-#     t = threading.Thread(name=id, target = func, *args, **kwargs)
-#     t.start(daemon=True)
-
-# class SchedulerStatus(StrEnum):
-#     NOT_STARTED = auto()
-#     STARTED = auto()
-#     COMPLETED = auto()
-#     FAILED = auto()
-
-
-# @dataclass
-# class SchedulerResponse:
-#     status: SchedulerStatus
-#     data: Any
 
 
 class TicketAPIViewSet(ModelViewSet):
