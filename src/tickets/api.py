@@ -6,12 +6,13 @@ from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from users.constants import Role
 
 from tickets.models import Message, Ticket
-from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
-from tickets.serializers import (MessageSerializer, TicketAssignSerializer,
-                                 TicketSerializer)
-from users.constants import Role
+from tickets.permissions import (IsOwner, RoleIsAdmin, RoleIsManager,  # noqa
+                                 RoleIsUser)
+from tickets.serializers import TicketAssignSerializer  # noqa
+from tickets.serializers import MessageSerializer, TicketSerializer  # noqa
 
 User = get_user_model()
 
@@ -20,7 +21,6 @@ class TicketAPIViewSet(ModelViewSet):
     serializer_class = TicketSerializer
 
     def get_queryset(self):
-        # user = self.request.user
         all_tickets = Ticket.objects.all()
         return all_tickets
 
@@ -57,17 +57,6 @@ class TicketAPIViewSet(ModelViewSet):
     def take(self, request, pk):
         ticket = self.get_object()
 
-        # *****************************************************
-        # Custom services approach
-        # *****************************************************
-        # updated_ticket: Ticket = AssignService(ticket).assign_manager(
-        #     request.user,
-        # )
-        # serializer = self.get_serializer(ticket)
-
-        # *****************************************************
-        # Serializers approach
-        # *****************************************************
         serializer = TicketAssignSerializer(data={"manager_id": request.user.id})
         serializer.is_valid()
         ticket = serializer.assign(ticket)
@@ -89,12 +78,6 @@ class MessageListCreateAPIView(ListCreateAPIView):
     lookup_field = "ticket_id"
 
     def get_queryset(self):
-        # ticket = get_object_or_404(
-        #     Ticket.objects.all(), id=self.kwargs[self.lookup_field]
-        # )
-        # if ticket.user != self.request.user and ticket.manager != self.request.user:
-        #     raise Http404
-
         return Message.objects.filter(
             Q(ticket__user=self.request.user) | Q(ticket__manager=self.request.user),
             ticket_id=self.kwargs[self.lookup_field],
