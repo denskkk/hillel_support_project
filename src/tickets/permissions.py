@@ -25,8 +25,3 @@ class IsOwner(BasePermission):
 
     def has_object_permission(self, request, view, obj: Ticket):
         return obj.user == request.user
-
-
-class TicketTakePermission(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role == Role.MANAGER

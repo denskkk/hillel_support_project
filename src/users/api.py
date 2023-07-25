@@ -17,7 +17,5 @@ class UserCreateAPIView(CreateAPIView):
         headers = self.get_success_headers(public_serializer.data)
 
         return Response(
-            public_serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers,  # noqa
+            public_serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )

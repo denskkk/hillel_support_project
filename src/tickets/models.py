@@ -28,9 +28,7 @@ class Ticket(models.Model):
 class Message(models.Model):
     text = models.TextField()
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.RESTRICT,
-        related_name="messages",  # noqa
+        settings.AUTH_USER_MODEL, on_delete=models.RESTRICT, related_name="messages"
     )
     ticket = models.ForeignKey(
         "tickets.Ticket", on_delete=models.RESTRICT, related_name="messages"

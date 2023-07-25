@@ -45,10 +45,9 @@ class TicketAPIViewSet(ModelViewSet):
     serializer_class = TicketSerializer
 
     def get_queryset(self):
-        user = self.request.user
+        # user = self.request.user
         all_tickets = Ticket.objects.all()
-
-        sleep(15)
+        return all_tickets
 
         if user.role == Role.ADMIN:
             return all_tickets
@@ -58,7 +57,7 @@ class TicketAPIViewSet(ModelViewSet):
             # User's role fallback solution
             return all_tickets.filter(user=user)
 
-    def get_permissions(self):
+    def __get_permissions(self):
         """
         Instantiates and returns the list of permissions that this view requires.
         """

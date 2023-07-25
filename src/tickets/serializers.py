@@ -8,15 +8,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = [
-            "id",
-            "title",
-            "text",
-            "visibility",
-            "status",
-            "user",
-            "manager",
-        ]  # noqa
+        fields = ["id", "title", "text", "visibility", "status", "user", "manager"]
         read_only_fields = ["visibility", "manager"]
 
 
