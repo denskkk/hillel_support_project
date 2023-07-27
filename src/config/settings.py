@@ -1,12 +1,14 @@
 from datetime import timedelta
+from distutils.util import strtobool
+from os import getenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 SRC_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = SRC_DIR.parent
 
-SECRET_KEY = "$_*gwj6#t51c=(t^#q0mpgvb19osxt4%d&zx@f-(3$409*eh3m"
-DEBUG = True
+SECRET_KEY = getenv("DJANGO_SECRET_KEY", default="invalid")
+DEBUG = strtobool(getenv("DJANGO_DEBUG", default="false"))
 ALLOWED_HOSTS = ["*"]
 
 # Application definition
@@ -100,7 +102,7 @@ STATIC_URL = "static/"
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-POKEAPI_BASE_URL = "https://pokeapi.co/api/v2/pokemon"
+POKEAPI_BASE_URL = getenv("POKEAPI_BASE_URL", default="invalid")
 
 AUTH_USER_MODEL = "users.User"
 
@@ -123,9 +125,11 @@ if DEBUG is True:
     )
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        seconds=int(getenv("JWT_ACCESS_TOKEN_LIFETIME", default=100))
+    ),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-CELERY_BROKER_URL = "redis://broker:6379/0"
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default="redis://broker:6379/0")

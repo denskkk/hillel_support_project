@@ -7,7 +7,6 @@ services:
     ports:
       - 6379:6379
 
-
   application: &app
     # stdin_open: true
     # tty: true
@@ -22,6 +21,7 @@ services:
       - 8000:8000
     volumes:
       - ./:/app/
+    env_file: .env
 
   worker:
     <<: *app
