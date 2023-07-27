@@ -1,3 +1,5 @@
+from time import sleep
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -6,9 +8,9 @@ from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from users.constants import Role
 
 # isort:skip_file
+from config.celery import celery_app
 from tickets.models import Message, Ticket
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
 from tickets.serializers import (
@@ -16,16 +18,46 @@ from tickets.serializers import (
     TicketAssignSerializer,
     TicketSerializer,
 )
+from users.constants import Role
 
 User = get_user_model()
+
+
+# def scheduler(id: int, func: Callable, *args, **kwargs):
+#     t = threading.Thread(name=id, target = func, *args, **kwargs)
+#     t.start(daemon=True)
+
+# class SchedulerStatus(StrEnum):
+#     NOT_STARTED = auto()
+#     STARTED = auto()
+#     COMPLETED = auto()
+#     FAILED = auto()
+
+
+# @dataclass
+# class SchedulerResponse:
+#     status: SchedulerStatus
+#     data: Any
+
+
+# TODO: Read about backend results
+#       Read about celerybeat
+#       Read about Celery queues
+@celery_app.task
+def send_email():
+    print("📭 Sending email")
+    sleep(10)
+    print("✅ Email sent")
 
 
 class TicketAPIViewSet(ModelViewSet):
     serializer_class = TicketSerializer
 
     def get_queryset(self):
+        user = self.request.user
         all_tickets = Ticket.objects.all()
-        return all_tickets
+
+        send_email.delay()
 
         if user.role == Role.ADMIN:
             return all_tickets
@@ -35,7 +67,7 @@ class TicketAPIViewSet(ModelViewSet):
             # User's role fallback solution
             return all_tickets.filter(user=user)
 
-    def __get_permissions(self):
+    def get_permissions(self):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
@@ -60,6 +92,17 @@ class TicketAPIViewSet(ModelViewSet):
     def take(self, request, pk):
         ticket = self.get_object()
 
+        # *****************************************************
+        # Custom services approach
+        # *****************************************************
+        # updated_ticket: Ticket = AssignService(ticket).assign_manager(
+        #     request.user,
+        # )
+        # serializer = self.get_serializer(ticket)
+
+        # *****************************************************
+        # Serializers approach
+        # *****************************************************
         serializer = TicketAssignSerializer(data={"manager_id": request.user.id})
         serializer.is_valid()
         ticket = serializer.assign(ticket)
@@ -81,6 +124,12 @@ class MessageListCreateAPIView(ListCreateAPIView):
     lookup_field = "ticket_id"
 
     def get_queryset(self):
+        # ticket = get_object_or_404(
+        #     Ticket.objects.all(), id=self.kwargs[self.lookup_field]
+        # )
+        # if ticket.user != self.request.user and ticket.manager != self.request.user:
+        #     raise Http404
+
         return Message.objects.filter(
             Q(ticket__user=self.request.user) | Q(ticket__manager=self.request.user),
             ticket_id=self.kwargs[self.lookup_field],
